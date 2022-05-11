@@ -1,17 +1,19 @@
 #include <Arduino.h>
-#include "mEprom.h"
-#include "MyScan.h"
-#include "WiFiCtrl.h"
+#include "WiFi.h"
 
 void setup() {
     Serial.begin(115200);
-    Serial.println("Booting...");     // USB won't be connected yet, so we will only see this on a reboot
     delay(2000);                      // Delay for debugging. Allows time for USB to connect to computer.
 
-    EP.Start();                       // Load our settings
-    WiFiCtrl.StartEventHandler();
-    WiFiCtrl.StartPingSvc();          // Make sure SoftAP or WiFi are up
-    StartScanAsync();                 // Start scan before starting WiFi as scan will fail if WiFi isn't connected. Completion of WiFi scan starts WiFi.
+    int APcnt = WiFi.scanNetworks(false, true, false, 800, 0);;  //Blocks until scan completes
+    //PrintAPs();
+    //Scan complete, connect to WiFi
+
+    //Hostname is for DHCP and possibly DNS resolution.
+    //For Windows NETBIOS name lookups use MDNS
+    //WiFi.mode(WIFI_MODE_NULL);                                                        //Bugfix: hostname won't be set if STA mode is already active, so shut down WiFi.
+    WiFi.setHostname("BORG8472");                                                     //Hostname isn't set until WiFi.mode() is called, and only if STA mode wasn't active.
+    WiFi.begin("SSID", "password");
 }
 
 void loop() {
